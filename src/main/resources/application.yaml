@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: kyotu
+
+server:
+  port: 8080
+
+elevator:
+  tick-ms: 150
+  floor-travel-ms: 1000
+  door-open-ms: 1500
+  door-transition-ms: 500
+  direction-penalty-multiplier: 2
+  load-penalty: 1
+  default-floors: 10
+  default-cabins: 3

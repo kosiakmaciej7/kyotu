@@ -1,0 +1,72 @@
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    <span class="brand-name">KYOTU</span>
+    <span class="brand-sep">/</span>
+    <span>ELEVATOR OBSERVATORY</span>
+  </div>
+
+  <div class="topbar-spacer"></div>
+
+  <app-setup (apply)="onApply($event)" />
+
+  <app-speed [current]="speedMultiplier()" (change)="onSpeed($event)" />
+
+  <button class="btn" (click)="onReset()">RESET</button>
+
+  <div class="status-pill" [class.disconnected]="!connected()">
+    <span class="status-dot"></span>
+    <span>{{ connected() ? 'LIVE' : 'OFFLINE' }}</span>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="section-label"><span>Building</span></div>
+
+  @if (snapshot(); as s) {
+    <section class="building">
+      <app-floor-panel
+          [floors]="floors()"
+          [allCalls]="allHallCalls()"
+          (call)="onHallCall($event)" />
+
+      <div class="shafts">
+        @for (e of elevators(); track e.id; let i = $index) {
+          <app-shaft [elevator]="e" [floors]="floors()" [shaftIndex]="i" />
+        }
+      </div>
+    </section>
+
+    <div class="section-label" style="margin-top: 40px;"><span>Car panels</span></div>
+
+    <section class="car-panels">
+      @for (e of elevators(); track e.id; let i = $index) {
+        <app-car-panel [elevator]="e" [floors]="floors()" [shaftIndex]="i"
+                       (pick)="onCarCall(e.id, $event)" />
+      }
+    </section>
+
+    <div class="meta-row">
+      <div class="meta">
+        <span class="meta-label">PENDING HALL CALLS</span>
+        <span class="meta-value"><span class="accent">{{ s.pendingHallCalls.length }}</span></span>
+      </div>
+      <div class="meta">
+        <span class="meta-label">ACTIVE CABINS</span>
+        <span class="meta-value"><span class="accent">{{ activeCabins() }}</span> / {{ elevators().length }}</span>
+      </div>
+      <div class="meta">
+        <span class="meta-label">TICK</span>
+        <span class="meta-value">150 ms</span>
+      </div>
+      <div class="meta">
+        <span class="meta-label">DISPATCH</span>
+        <span class="meta-value">cost-based</span>
+      </div>
+    </div>
+  } @else {
+    <p style="color: var(--text-tertiary); font-family: var(--font-mono); font-size: 12px;">
+      Waiting for stream…
+    </p>
+  }
+</main>
